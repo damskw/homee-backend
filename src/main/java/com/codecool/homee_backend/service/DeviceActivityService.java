@@ -39,7 +39,7 @@ public class DeviceActivityService {
                 .flatMap(space -> space.getDevices().stream())
                 .flatMap(device -> device.getDeviceActivities().stream())
                 .map(deviceActivityMapper::mapUserActivityEntityToDto)
-                .toList();
+                .toList();//
     }
 
     public DeviceActivityDto getActivity(UUID id) {
