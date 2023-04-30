@@ -1,8 +1,11 @@
 package com.codecool.homee_backend.controller;
 
+import com.codecool.homee_backend.config.auth.SpringSecurityConfig;
 import com.codecool.homee_backend.controller.dto.space.NewSpaceDto;
 import com.codecool.homee_backend.controller.dto.space.SpaceDto;
+import com.codecool.homee_backend.repository.HomeeUserRepository;
 import com.codecool.homee_backend.service.SpaceService;
+import com.codecool.homee_backend.service.auth.JwtTokenService;
 import com.codecool.homee_backend.service.exception.SpaceNotFoundException;
 import org.hamcrest.Matchers;
 import org.instancio.Instancio;
@@ -11,19 +14,23 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.List;
 import java.util.UUID;
 
+import static com.codecool.homee_backend.config.auth.SpringSecurityConfig.USER;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = SpaceController.class)
+@Import(SpringSecurityConfig.class)
 class SpaceControllerTest {
 
     @Autowired
@@ -32,6 +39,13 @@ class SpaceControllerTest {
     @MockBean
     private SpaceService spaceService;
 
+    @MockBean
+    private JwtTokenService jwtTokenService;
+
+    @MockBean
+    private HomeeUserRepository userRepository;
+
+    @WithMockUser(roles = USER)
     @Test
     void shouldReturnEmptyJson() throws Exception {
         // given:
@@ -47,6 +61,7 @@ class SpaceControllerTest {
 
     }
 
+    @WithMockUser(roles = USER)
     @Test
     void shouldReturnSpacesJson() throws Exception {
         // given:
@@ -68,7 +83,7 @@ class SpaceControllerTest {
 
 
     }
-
+    @WithMockUser(roles = USER)
     @Test
     void shouldReturn404WhenSpaceNotFound() throws Exception {
         // given:
@@ -84,30 +99,29 @@ class SpaceControllerTest {
         ;
 
     }
-
+    @WithMockUser(roles = USER)
     @Test
     void shouldReturnNewSpaceJson() throws Exception {
         // given:
-        NewSpaceDto newSpaceDto = new NewSpaceDto("testName", "testAbout");
+        NewSpaceDto newSpaceDto = new NewSpaceDto("test", "test", UUID.fromString("9af48a4c-bf0b-4285-bb8f-afcff90f4c64"));
 
-        SpaceDto spaceDto = new SpaceDto(UUID.randomUUID(), "testName", "testAbout");
+        SpaceDto spaceDto = new SpaceDto(UUID.fromString("9af48a4c-bf0b-4285-bb8f-afcff90f4c64"), newSpaceDto.userId(), "test", "test");
 
         Mockito.when(spaceService.addNewSpace(newSpaceDto)).thenReturn(spaceDto);
 
-
         // when:
-        ResultActions reponse = mockMvc.perform(post("/api/v1/spaces")
+        ResultActions response = mockMvc.perform(post("/api/v1/spaces")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
                         {
-                         "name": "testName",
-                          "about": "testAbout"
+                         "name": "test",
+                          "about": "test",
+                          "userId": "9af48a4c-bf0b-4285-bb8f-afcff90f4c64"
                         }
                                                 """));
         // then:
-        reponse.andExpect(status().isOk())
+         response.andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value(spaceDto.name()))
                 .andExpect(jsonPath("$.about").value(spaceDto.about()));
-
     }
 }
