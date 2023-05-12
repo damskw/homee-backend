@@ -14,7 +14,7 @@ COPY . .
 RUN mvn clean package -Pprod -DskipTests
 
 # Use a new base image with Java 17 installed
-FROM FROM openjdk:17-jdk-slim
+FROM openjdk:17-jdk-slim
 
 # Set the working directory in the container
 #WORKDIR /app
