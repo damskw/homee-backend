@@ -11,10 +11,10 @@ COPY . .
 RUN chmod +x mvnw
 
 # Build the application using Maven
-RUN ./mvnw package -DskipTests
+RUN mvn package -DskipTests
 
 # Use a new base image with Java 17 installed
-FROM openjdk:17-jdk-slim
+FROM FROM openjdk:17-jdk-slim
 
 # Set the working directory in the container
 WORKDIR /app
