@@ -1,5 +1,5 @@
 # Use a base image with Maven and Java 16 installed
-FROM adoptopenjdk:16-jdk-hotspot AS builder
+FROM adoptopenjdk:17-jre-hotspot AS builder
 
 # Set the working directory in the container
 WORKDIR /app
