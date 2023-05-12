@@ -2,25 +2,25 @@
 FROM maven:3.8.4-openjdk-17-slim AS builder
 
 # Set the working directory in the container
-WORKDIR /app
+#WORKDIR /app
 
 # Copy the project files into the container
 COPY . .
 
 # Set executable permissions for the Maven wrapper script
-RUN chmod +x mvnw
+#RUN chmod +x mvnw
 
 # Build the application using Maven
-RUN mvn package -DskipTests
+RUN mvn clean package -Pprod -DskipTests
 
 # Use a new base image with Java 17 installed
 FROM FROM openjdk:17-jdk-slim
 
 # Set the working directory in the container
-WORKDIR /app
+#WORKDIR /app
 
 # Copy the JAR file from the builder stage
-COPY --from=builder /app/target/homee_backend-0.0.1-SNAPSHOT.jar /app/homee_backend.jar
+COPY --from=builder /target/homee_backend-0.0.1-SNAPSHOT.jar homee_backend.jar
 
 # Expose the port on which your application listens
 EXPOSE 8080
