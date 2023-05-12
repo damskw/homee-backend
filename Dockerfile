@@ -1,11 +1,23 @@
-# Use a base image with Java 16 installed
+# Use a base image with Maven and Java 16 installed
+FROM adoptopenjdk:16-jdk-hotspot AS builder
+
+# Set the working directory in the container
+WORKDIR /app
+
+# Copy the project files into the container
+COPY . .
+
+# Build the application using Maven
+RUN ./mvnw package -DskipTests
+
+# Use a new base image with Java 16 installed
 FROM adoptopenjdk:16-jre-hotspot
 
 # Set the working directory in the container
 WORKDIR /app
 
-# Copy the JAR file into the container at /app
-COPY target/Homee-backend.jar /app
+# Copy the JAR file from the builder stage
+COPY --from=builder /app/target/Homee-backend.jar /app
 
 # Expose the port on which your application listens
 EXPOSE 8080
