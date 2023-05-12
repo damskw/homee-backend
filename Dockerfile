@@ -14,16 +14,16 @@ RUN chmod +x mvnw
 RUN ./mvnw package -DskipTests
 
 # Use a new base image with Java 17 installed
-FROM openjdk:17-jdk-slim
+FROM adoptopenjdk:17-jre-hotspot
 
 # Set the working directory in the container
 WORKDIR /app
 
 # Copy the JAR file from the builder stage
-COPY --from=builder /app/target/Homee-backend.jar /app
+COPY --from=builder /app/target/homee_backend-0.0.1-SNAPSHOT.jar /app/homee_backend.jar
 
 # Expose the port on which your application listens
 EXPOSE 8080
 
 # Set the entry point command to run your application when the container starts
-CMD ["java", "-jar", "Homee-backend.jar"]
+CMD ["java", "-jar", "homee_backend.jar"]
