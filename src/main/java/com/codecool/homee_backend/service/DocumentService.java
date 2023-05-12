@@ -3,7 +3,9 @@ package com.codecool.homee_backend.service;
 import com.codecool.homee_backend.controller.dto.document.DocumentDto;
 import com.codecool.homee_backend.controller.dto.document.NewDocumentDto;
 import com.codecool.homee_backend.entity.Device;
+import com.codecool.homee_backend.entity.DeviceActivity;
 import com.codecool.homee_backend.entity.Document;
+import com.codecool.homee_backend.entity.type.ActivityType;
 import com.codecool.homee_backend.mapper.DocumentMapper;
 import com.codecool.homee_backend.repository.DeviceRepository;
 import com.codecool.homee_backend.repository.DocumentRepository;
@@ -39,6 +41,7 @@ public class DocumentService {
         Device device = deviceRepository.findById(newDocument.deviceId())
                 .orElseThrow(() -> new DeviceNotFoundException(newDocument.deviceId()));
         Document document = documentMapper.mapDocumentDtoToEntity(newDocument);
+        addSavedDocumentActivity(device, document);
         document.setDevice(device);
         document.setPath(filePath);
         documentRepository.save(document);
@@ -65,6 +68,9 @@ public class DocumentService {
     public void deleteDocument(UUID id) throws IOException {
         Document document = documentRepository.findById(id)
                         .orElseThrow(() -> new DocumentNotFoundException(id));
+        Device device = document.getDevice();
+        addDeletedDocumentActivity(device, document);
+        deviceRepository.save(device);
         UploadsManagerUtil.deleteDocumentFile(document);
         documentRepository.deleteById(id);
     }
@@ -80,6 +86,32 @@ public class DocumentService {
         } catch (Exception e) {
             return HttpStatus.INTERNAL_SERVER_ERROR;
         }
+    }
+
+    private void addSavedDocumentActivity(Device device, Document document) {
+        DeviceActivity deviceActivity = new DeviceActivity(
+                device,
+                createSavedDocumentDescription(document),
+                ActivityType.IMPORTANT
+        );
+        device.addActivity(deviceActivity);
+    }
+
+    private void addDeletedDocumentActivity(Device device, Document document) {
+        DeviceActivity deviceActivity = new DeviceActivity(
+                device,
+                createdDeletedDocumentDescription(document),
+                ActivityType.IMPORTANT
+        );
+        device.addActivity(deviceActivity);
+    }
+
+    private String createSavedDocumentDescription(Document document) {
+        return "Document " + document.getName() + " has been added.";
+    }
+
+    private String createdDeletedDocumentDescription(Document document) {
+        return "Document " + document.getName() + " has been removed.";
     }
 
 }

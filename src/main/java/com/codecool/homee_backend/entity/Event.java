@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -24,14 +24,19 @@ public class Event {
     private EventType eventType;
     private Boolean notification;
     private LocalDate notificationTime;
-    private LocalDateTime scheduledAt;
+    private LocalDate scheduledAt;
 
     public Event(String name, EventType eventType, Boolean notification,
-                 LocalDate notificationTime, LocalDateTime scheduledAt) {
+                 LocalDate notificationTime, LocalDate scheduledAt) {
         this.name = name;
         this.eventType = eventType;
         this.notification = notification;
         this.notificationTime = notificationTime;
         this.scheduledAt = scheduledAt;
+    }
+
+
+    public Set<HomeeUser> getHomeeUsers() {
+        return this.getDevice().getSpace().getHomeeUsers();
     }
 }

@@ -3,9 +3,11 @@ package com.codecool.homee_backend.controller;
 
 import com.codecool.homee_backend.controller.dto.homeeuser.*;
 import com.codecool.homee_backend.service.HomeeUserService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
+import javax.mail.MessagingException;
 import java.util.List;
 import java.util.UUID;
 
@@ -34,6 +36,11 @@ public class UserController {
     @PostMapping("/login")
     public AuthenticatedUserDto loginUser(@RequestBody LoginUserDto dto) { return homeeUserService.loginUser(dto); }
 
+    @GetMapping(value = "/activate", params = {"userId", "code"})
+    public ResponseEntity<Void> activateUser(@RequestParam UUID userId, @RequestParam Integer code) {
+        return homeeUserService.activateUser(userId, code);
+    }
+
     @RolesAllowed(USER)
     @PutMapping
     public HomeeUserDto updateUser(@RequestBody UpdatedHomeeUserDto dto) { return homeeUserService.updateUser(dto); }
@@ -47,7 +54,7 @@ public class UserController {
     public void softDeleteUser(@PathVariable UUID id) { homeeUserService.softDelete(id); }
 
     @PostMapping("/register")
-    public HomeeUserDto addNewUser(@RequestBody NewHomeeUserDto newHomeeUser) {
+    public HomeeUserDto addNewUser(@RequestBody NewHomeeUserDto newHomeeUser) throws MessagingException {
         return homeeUserService.registerUser(newHomeeUser);
     }
 }

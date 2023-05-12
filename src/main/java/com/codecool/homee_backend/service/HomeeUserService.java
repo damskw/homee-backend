@@ -5,18 +5,22 @@ import com.codecool.homee_backend.entity.HomeeUser;
 import com.codecool.homee_backend.mapper.HomeeUserMapper;
 import com.codecool.homee_backend.repository.HomeeUserRepository;
 import com.codecool.homee_backend.service.auth.JwtTokenService;
+import com.codecool.homee_backend.service.email.EmailService;
 import com.codecool.homee_backend.service.exception.HomeeUserNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.mail.MessagingException;
 import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 import java.util.UUID;
 
 import static com.codecool.homee_backend.config.auth.SpringSecurityConfig.USER;
@@ -28,6 +32,7 @@ public class HomeeUserService {
     private final HomeeUserRepository homeeUserRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
+    private final EmailService emailService;
     private final JwtTokenService jwtTokenService;
     private final HomeeUserMapper homeeUserMapper;
 
@@ -43,10 +48,16 @@ public class HomeeUserService {
                 .orElseThrow(() -> new HomeeUserNotFoundException(id));
     }
 
-    public HomeeUserDto registerUser(NewHomeeUserDto dto) {
+    public HomeeUserDto registerUser(NewHomeeUserDto dto) throws MessagingException {
         HomeeUser homeeUser = homeeUserMapper.mapHomeeUserDtoToEntity(dto);
         homeeUser.setPassword(passwordEncoder.encode(homeeUser.getPassword()));
         homeeUser.setRole(USER);
+        homeeUser.setRegistrationCode(generateRandomCode());
+        emailService.sendEmail(
+                homeeUser.getEmail(),
+                "Registration code",
+                generateEmailWithCodeText(homeeUser.getRegistrationCode())
+        );
         HomeeUser homeeUserDb = homeeUserRepository.save(homeeUser);
         return homeeUserMapper.mapHomeeUserEntityToDto(homeeUserDb);
     }
@@ -66,7 +77,8 @@ public class HomeeUserService {
         authenticationManager.authenticate(authentication);
         HomeeUser homeeUser = homeeUserRepository.findByEmail(dto.username())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
-        return new AuthenticatedUserDto(homeeUser.getId(), homeeUser.getUsername(), jwtTokenService.generateToken(dto.username()));
+        return new AuthenticatedUserDto(homeeUser.getId(), homeeUser.getUsername(),
+                jwtTokenService.generateToken(dto.username()), homeeUser.getIsActivated());
     }
 
     public HomeeUserDto updateUser(UpdatedHomeeUserDto dto) {
@@ -110,4 +122,25 @@ public class HomeeUserService {
         homeeUser.clearAllUserSpaces();
     }
 
+    public ResponseEntity<Void> activateUser(UUID userId, Integer activate) {
+        HomeeUser homeeUser = homeeUserRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
+        if (homeeUser.getRegistrationCode().equals(activate)) {
+            homeeUser.setIsActivated(true);
+            homeeUserRepository.save(homeeUser);
+            log.info("User account " + homeeUser.getEmail() + " has been activated using code " + activate);
+            return ResponseEntity.ok().build();
+        }
+        log.info("User account " + homeeUser.getEmail() + " has not been activated using code " + activate);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    private String generateEmailWithCodeText(int code) {
+        return String.format("Please confirm your e-mail address with following code %d", code);
+    }
+
+    private int generateRandomCode() {
+        Random random = new Random();
+        return random.nextInt(900_000) + 100_000;
+    }
 }

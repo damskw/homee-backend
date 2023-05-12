@@ -51,6 +51,11 @@ public class DeviceController {
         return deviceService.getDevicesForUser(userId);
     }
 
+    @GetMapping(params = {"userId", "search"})
+    public List<DeviceDto> searchForUserDevices(@RequestParam UUID userId, String search) {
+        return deviceService.searchForUserDevices(userId, search);
+    }
+
     @GetMapping(params = {"userId", "count"})
     public Integer getAmountOfUserDevices(@RequestParam UUID userId) {
         return deviceService.countUserDevices(userId);

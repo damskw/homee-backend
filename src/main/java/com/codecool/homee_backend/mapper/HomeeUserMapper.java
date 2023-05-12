@@ -1,6 +1,5 @@
 package com.codecool.homee_backend.mapper;
 
-import com.codecool.homee_backend.controller.dto.homeeuser.AuthenticatedUserDto;
 import com.codecool.homee_backend.controller.dto.homeeuser.HomeeUserDto;
 import com.codecool.homee_backend.controller.dto.homeeuser.NewHomeeUserDto;
 import com.codecool.homee_backend.entity.HomeeUser;
@@ -19,14 +18,6 @@ public class HomeeUserMapper {
                 entity.getFirstName(),
                 entity.getLastName(),
                 entity.getAbout()
-        );
-    }
-
-    public AuthenticatedUserDto mapHomeeUserEntityToAuthenticatedUserDto(HomeeUser entity, String token) {
-        return new AuthenticatedUserDto(
-                entity.getId(),
-                entity.getUsername(),
-                token
         );
     }
 
