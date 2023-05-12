@@ -1,14 +1,29 @@
-# Use a base image with Java 16 installed
-FROM adoptopenjdk:16-jre-hotspot
+# Use a base image with Maven and Java 17 installed
+FROM maven:3.8.4-openjdk-17-slim AS builder
 
 # Set the working directory in the container
-WORKDIR /app
+#WORKDIR /app
 
-# Copy the JAR file into the container at /app
-COPY target/Homee-backend.jar /app
+# Copy the project files into the container
+COPY . .
+
+# Set executable permissions for the Maven wrapper script
+#RUN chmod +x mvnw
+
+# Build the application using Maven
+RUN mvn clean package -Pprod -DskipTests
+
+# Use a new base image with Java 17 installed
+FROM openjdk:17-jdk-slim
+
+# Set the working directory in the container
+#WORKDIR /app
+
+# Copy the JAR file from the builder stage
+COPY --from=builder /target/homee_backend-0.0.1-SNAPSHOT.jar homee_backend.jar
 
 # Expose the port on which your application listens
 EXPOSE 8080
 
 # Set the entry point command to run your application when the container starts
-CMD ["java", "-jar", "Homee-backend.jar"]
+CMD ["java", "-jar", "homee_backend.jar"]
