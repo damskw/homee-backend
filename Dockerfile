@@ -7,6 +7,12 @@ WORKDIR /app
 # Copy the project files into the container
 COPY . .
 
+# Set executable permissions for the Maven wrapper script
+RUN chmod +x mvnw
+
+# Copy the Maven dependencies cache
+COPY .m2 /root/.m2
+
 # Build the application using Maven
 RUN ./mvnw package -DskipTests
 
