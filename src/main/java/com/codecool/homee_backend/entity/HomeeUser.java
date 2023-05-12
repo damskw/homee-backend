@@ -50,6 +50,8 @@ public class HomeeUser {
     private Set<Space> spaces = new HashSet<>();
     @OneToMany(mappedBy = "homeeUser", cascade = CascadeType.ALL)
     private List<SupportTicket> supportTickets = new ArrayList<>();
+    private Integer registrationCode;
+    private Boolean isActivated = false;
 
     public HomeeUser(String username, String email, String password,
                      String firstName, String lastName,

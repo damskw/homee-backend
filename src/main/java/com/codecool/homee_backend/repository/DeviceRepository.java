@@ -20,6 +20,9 @@ public interface DeviceRepository extends JpaRepository<Device, UUID> {
     @Query("SELECT d FROM Device d JOIN d.space s JOIN s.homeeUsers u WHERE u.id=:userId")
     List<Device> findAllByUserId(UUID userId);
 
+    @Query("SELECT d FROM Device d JOIN d.space s JOIN s.homeeUsers u WHERE u.id=:userId AND LOWER (d.name) LIKE LOWER(CONCAT('%', :search, '%'))")
+    List<Device> searchForDevice(UUID userId, String search);
+
     @Transactional
     void deleteDeviceById(UUID deviceId);
 

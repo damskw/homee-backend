@@ -2,14 +2,11 @@ package com.codecool.homee_backend.service;
 
 import com.codecool.homee_backend.controller.dto.useractivity.DeviceActivityDto;
 import com.codecool.homee_backend.entity.DeviceActivity;
-import com.codecool.homee_backend.entity.HomeeUser;
 import com.codecool.homee_backend.mapper.DeviceActivityMapper;
 import com.codecool.homee_backend.repository.DeviceActivityRepository;
 import com.codecool.homee_backend.repository.HomeeUserRepository;
 import com.codecool.homee_backend.service.exception.ActivityNotFoundException;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.UUID;
@@ -33,13 +30,9 @@ public class DeviceActivityService {
     }
 
     public List<DeviceActivityDto>  getUserDevicesActivity(UUID userId) {
-        HomeeUser homeeUser = homeeUserRepository.findById(userId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        return homeeUser.getSpaces().stream()
-                .flatMap(space -> space.getDevices().stream())
-                .flatMap(device -> device.getDeviceActivities().stream())
-                .map(deviceActivityMapper::mapUserActivityEntityToDto)
-                .toList();//
+        return deviceActivityRepository.findAllByUserId(userId)
+                .stream().map(deviceActivityMapper::mapUserActivityEntityToDto)
+                .toList();
     }
 
     public DeviceActivityDto getActivity(UUID id) {

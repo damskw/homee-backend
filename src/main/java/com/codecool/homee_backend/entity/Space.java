@@ -21,7 +21,7 @@ public class Space {
     @Version
     private Integer version;
     private String name;
-    @ManyToMany(mappedBy = "spaces")
+    @ManyToMany(mappedBy = "spaces", fetch = FetchType.LAZY)
     private Set<HomeeUser> homeeUsers = new HashSet<>();
     private String about;
     @OneToMany(mappedBy = "space", cascade = { CascadeType.PERSIST, CascadeType.MERGE })

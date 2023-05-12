@@ -61,6 +61,12 @@ public class DeviceService {
                 .toList();
     }
 
+    public List<DeviceDto> searchForUserDevices(UUID userId, String search) {
+        return deviceRepository.searchForDevice(userId, search).stream()
+                .map(deviceMapper::mapDeviceEntityToDto)
+                .toList();
+    }
+
     public DeviceDto addNewDevice(NewDeviceDto dto) {
         Device device = deviceMapper.mapDeviceDtoToEntity(dto);
         addCreatedDeviceActivity(device);
@@ -147,9 +153,10 @@ public class DeviceService {
     }
 
     private String createOnNewDeviceDescription(Device device) {
-        return "Device " + device.getName() + " has been created";
+        return "Device " + device.getName() + " has been created.";
     }
     private String createAssignSpaceDescription(Space space) {
         return "Device has been assigned to " + space.getName() + " space.";
     }
+
 }

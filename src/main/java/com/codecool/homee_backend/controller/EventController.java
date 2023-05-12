@@ -34,6 +34,15 @@ public class EventController {
         return eventService.getEventsForDevice(deviceId);
     }
 
+    @GetMapping(params = {"variant", "deviceId"})
+    public List<EventDto> getPastEvents(@RequestParam String variant, @RequestParam UUID deviceId) {
+        return switch (variant) {
+            case "future" -> eventService.getFutureEvents(deviceId);
+            case "past" -> eventService.getPastEvents(deviceId);
+            default -> null;
+        };
+    }
+
     @GetMapping("/types")
     public List<EventType> getEventTypes() { return eventService.getTypes(); }
 

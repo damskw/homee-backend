@@ -10,6 +10,9 @@ import java.util.UUID;
 
 @Repository
 public interface DeviceActivityRepository extends JpaRepository<DeviceActivity, UUID> {
-    @Query("SELECT DISTINCT d FROM DeviceActivity d WHERE d.device.id=:id")
+    @Query("SELECT DISTINCT d FROM DeviceActivity d WHERE d.device.id=:id ORDER BY d.date DESC")
     List<DeviceActivity> findAllByDeviceId(UUID id);
+
+    @Query("SELECT a FROM DeviceActivity a JOIN a.device d JOIN d.space s JOIN s.homeeUsers u WHERE u.id =:id ORDER BY a.date DESC")
+    List<DeviceActivity> findAllByUserId(UUID id);
 }

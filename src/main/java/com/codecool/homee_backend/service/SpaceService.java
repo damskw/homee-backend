@@ -5,6 +5,7 @@ import com.codecool.homee_backend.controller.dto.space.ShareSpaceDto;
 import com.codecool.homee_backend.controller.dto.space.SpaceDto;
 import com.codecool.homee_backend.controller.dto.space.UpdatedSpaceDto;
 import com.codecool.homee_backend.entity.HomeeUser;
+import com.codecool.homee_backend.entity.Notification;
 import com.codecool.homee_backend.entity.Space;
 import com.codecool.homee_backend.entity.SpaceGroup;
 import com.codecool.homee_backend.mapper.SpaceMapper;
@@ -102,6 +103,7 @@ public class SpaceService {
                 .orElseThrow(() -> new SpaceNotFoundException(dto.spaceId()));
         HomeeUser homeeUser = homeeUserRepository.findByEmail(dto.invitationEmail())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
+        addAssignSpaceNotification(homeeUser, space);
         space.addHomeeUser(homeeUser);
         homeeUser.addSpace(space);
         homeeUserRepository.save(homeeUser);
@@ -152,4 +154,13 @@ public class SpaceService {
         return spaceRepository.findByHomeeUserId(userId).size();
     }
 
+    private void addAssignSpaceNotification(HomeeUser homeeUser, Space space) {
+        Notification notification = new Notification(createAssignSpaceNotificationDescription(space));
+        homeeUser.addNotification(notification);
+        notification.setHomeeUser(homeeUser);
+    }
+
+    private String createAssignSpaceNotificationDescription(Space space) {
+        return "You have been granted access to " + space.getName() + " space. You can view it's details and its devices in your spaces section.";
+    }
 }

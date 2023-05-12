@@ -32,6 +32,10 @@ public class EventService {
         this.eventMapper = eventMapper;
     }
 
+    public List<Event> getEventEntitiesForDate(LocalDate date) {
+        return eventRepository.getAllByNotificationTime(date);
+    }
+
 
     public List<EventDto> getEventsForDate(LocalDate date) {
         return eventRepository.getAllByNotificationTime(date).stream()
@@ -85,7 +89,7 @@ public class EventService {
         DeviceActivity deviceActivity = new DeviceActivity(
                 device,
                 createAddNewEventDescription(event),
-                ActivityType.INFORMATION
+                ActivityType.REMINDER
         );
         device.addActivity(deviceActivity);
     }
@@ -94,4 +98,17 @@ public class EventService {
         return "Event " + event.getName() + " has been added to device.";
     }
 
+    public List<EventDto> getFutureEvents(UUID deviceId) {
+        return eventRepository.findAllByDeviceIdLaterThan(deviceId, LocalDate.now())
+                .stream()
+                .map(eventMapper::mapEventEntityToDto)
+                .toList();
+    }
+
+    public List<EventDto> getPastEvents(UUID deviceId) {
+        return eventRepository.findAllByDeviceIdOlderThan(deviceId, LocalDate.now())
+                .stream()
+                .map(eventMapper::mapEventEntityToDto)
+                .toList();
+    }
 }

@@ -6,6 +6,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -33,6 +34,7 @@ import java.util.List;
 @EnableMethodSecurity(jsr250Enabled = true)
 @EnableConfigurationProperties(AuthConfigProperties.class)
 @EnableScheduling
+@EnableAsync
 public class SpringSecurityConfig {
 
     public static final String ADMIN = "ADMIN";
@@ -43,7 +45,7 @@ public class SpringSecurityConfig {
         http
                 .csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/api/v1/users/login", "/api/v1/users/register", "/static/**").permitAll()
+                .antMatchers("/api/v1/users/login", "/api/v1/users/register", "/api/v1/users/activate", "/static/**").permitAll()
                 .anyRequest().authenticated()
                 .and().exceptionHandling().authenticationEntryPoint(authenticationEntryPoint)
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
