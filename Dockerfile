@@ -14,7 +14,7 @@ RUN chmod +x mvnw
 RUN ./mvnw package -DskipTests
 
 # Use a new base image with Java 17 installed
-FROM adoptopenjdk:17-jre-hotspot
+FROM openjdk:17-jdk-slim
 
 # Set the working directory in the container
 WORKDIR /app
