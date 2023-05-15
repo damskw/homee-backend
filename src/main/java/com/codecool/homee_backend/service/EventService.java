@@ -111,4 +111,8 @@ public class EventService {
                 .map(eventMapper::mapEventEntityToDto)
                 .toList();
     }
+
+    public Integer getNumberOfNotificationEventsForUser(UUID userId) {
+        return eventRepository.countUserNotificationEvents(userId);
+    }
 }

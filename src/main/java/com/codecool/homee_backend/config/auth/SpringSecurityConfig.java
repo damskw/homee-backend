@@ -45,7 +45,8 @@ public class SpringSecurityConfig {
         http
                 .csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/api/v1/users/login", "/api/v1/users/register", "/api/v1/users/activate", "/static/**").permitAll()
+                .antMatchers("/api/v1/users/login", "/api/v1/users/register",
+                        "/api/v1/users/activate", "/api/v1/users/lost-password", "/static/**").permitAll()
                 .anyRequest().authenticated()
                 .and().exceptionHandling().authenticationEntryPoint(authenticationEntryPoint)
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)

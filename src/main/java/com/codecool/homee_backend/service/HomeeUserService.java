@@ -62,6 +62,28 @@ public class HomeeUserService {
         return homeeUserMapper.mapHomeeUserEntityToDto(homeeUserDb);
     }
 
+    public void changeLostPassword(LostPasswordDto dto) {
+        HomeeUser homeeUser = homeeUserRepository.findByEmail(dto.email())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
+        if (!Objects.equals(homeeUser.getRegistrationCode(), dto.passwordCode())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        }
+        homeeUser.setPassword(passwordEncoder.encode(dto.changedPassword()));
+        homeeUserRepository.save(homeeUser);
+    }
+
+    public void requestPasswordChange(String email) throws MessagingException {
+        HomeeUser homeeUser = homeeUserRepository.findByEmail(email)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
+        homeeUser.setRegistrationCode(generateRandomCode());
+        emailService.sendEmail(
+                homeeUser.getEmail(),
+                "Lost password's code",
+                generateEmailRequestPasswordCodeText(homeeUser.getRegistrationCode())
+        );
+        homeeUserRepository.save(homeeUser);
+    }
+
     public void softDelete(UUID id) {
         HomeeUser homeeUser = homeeUserRepository.findByUserId(id)
                 .orElseThrow(() -> new HomeeUserNotFoundException(id));
@@ -81,6 +103,7 @@ public class HomeeUserService {
                 jwtTokenService.generateToken(dto.username()), homeeUser.getIsActivated());
     }
 
+
     public HomeeUserDto updateUser(UpdatedHomeeUserDto dto) {
         HomeeUser homeeUser = homeeUserRepository.findById(dto.id())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
@@ -96,7 +119,7 @@ public class HomeeUserService {
     public HomeeUserDto changeUserPassword(ChangeHomeeUserPasswordDto dto) {
         HomeeUser homeeUser = homeeUserRepository.findById(dto.id())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
-        if (!Objects.equals(homeeUser.getPassword(), dto.oldPassword())) {
+        if (!Objects.equals(homeeUser.getPassword(), passwordEncoder.encode(dto.oldPassword()))) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
         homeeUser.setPassword(dto.newPassword());
@@ -139,8 +162,13 @@ public class HomeeUserService {
         return String.format("Please confirm your e-mail address with following code %d", code);
     }
 
+    private String generateEmailRequestPasswordCodeText(int code) {
+        return String.format("Please use following code to confirm password change: %d", code);
+    }
+
     private int generateRandomCode() {
         Random random = new Random();
         return random.nextInt(900_000) + 100_000;
     }
+
 }

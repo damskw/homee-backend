@@ -31,4 +31,7 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
     @Query("SELECT e FROM Event e JOIN e.device d WHERE d.id =:id AND e.scheduledAt > :time")
     List<Event> findAllByDeviceIdLaterThan(UUID id, LocalDate time);
 
+    @Query("SELECT COUNT(e) FROM HomeeUser u JOIN u.spaces s JOIN s.devices d JOIN d.events e WHERE u.id = :id AND e.notification=true")
+    Integer countUserNotificationEvents(UUID id);
+
 }

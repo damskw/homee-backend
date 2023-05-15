@@ -85,4 +85,9 @@ public class DocumentController {
         return documentService.saveDocument(deviceId, documentName, file);
     }
 
+    @GetMapping(params = {"userId", "count"})
+    public Integer countUserDocuments(@RequestParam UUID userId) {
+        return documentService.countUserDocuments(userId);
+    }
+
 }
