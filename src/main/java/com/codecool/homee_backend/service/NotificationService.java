@@ -56,4 +56,8 @@ public class NotificationService {
         notification.setHomeeUser(homeeUser);
         return notificationMapper.mapNotificationEntityToDto(notificationRepository.save(notification));
     }
+
+    public void deleteNotification(UUID id) {
+        notificationRepository.deleteById(id);
+    }
 }

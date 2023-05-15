@@ -114,4 +114,7 @@ public class DocumentService {
         return "Document " + document.getName() + " has been removed.";
     }
 
+    public Integer countUserDocuments(UUID userId) {
+        return documentRepository.countUserDocuments(userId);
+    }
 }

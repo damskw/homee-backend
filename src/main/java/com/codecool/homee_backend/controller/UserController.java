@@ -49,6 +49,16 @@ public class UserController {
     @PutMapping(params = "password")
     public HomeeUserDto changeUserPassword(@RequestBody ChangeHomeeUserPasswordDto dto) { return homeeUserService.changeUserPassword(dto); }
 
+    @GetMapping(value = "/lost-password", params = {"email"})
+    public void requestPasswordChange(@RequestParam String email) throws MessagingException {
+        homeeUserService.requestPasswordChange(email);
+    }
+
+    @PostMapping("/lost-password")
+    public void changeLostPassword(@RequestBody LostPasswordDto dto) {
+        homeeUserService.changeLostPassword(dto);
+    }
+
     @RolesAllowed(USER)
     @DeleteMapping("/{id}")
     public void softDeleteUser(@PathVariable UUID id) { homeeUserService.softDelete(id); }

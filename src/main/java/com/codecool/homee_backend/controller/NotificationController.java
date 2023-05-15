@@ -42,4 +42,9 @@ public class NotificationController {
         return notificationService.addNewNotification(dto);
     }
 
+    @DeleteMapping("/{id}")
+    public void deleteNotification(@PathVariable UUID id) {
+        notificationService.deleteNotification(id);
+    }
+
 }

@@ -46,6 +46,11 @@ public class EventController {
     @GetMapping("/types")
     public List<EventType> getEventTypes() { return eventService.getTypes(); }
 
+    @GetMapping(params = {"userId", "count"})
+    public Integer getNumberOfNotificationEventsForUser(@RequestParam UUID userId) {
+        return eventService.getNumberOfNotificationEventsForUser(userId);
+    }
+
     @PostMapping
     public EventDto addNewEvent(@RequestBody NewEventDto newEvent) {
         return eventService.addNewEvent(newEvent);
