@@ -19,7 +19,8 @@ public class ErrorControllerAdvice {
             NoteNotFoundException.class,
             SpaceNotFoundException.class,
             SupportTicketReplyNotFoundException.class,
-            SupportTicketNotFoundException.class})
+            SupportTicketNotFoundException.class,
+            TaskNotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     protected ErrorResponse handleNoResources(ResourcesNotFoundException e) {
         return new ErrorResponse(e.getMessage());

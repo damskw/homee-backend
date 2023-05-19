@@ -5,6 +5,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,9 +27,9 @@ public class Device {
     @Enumerated(EnumType.STRING)
     private DeviceType deviceType;
     private String spot;
-    private LocalDateTime warrantyStart;
-    private LocalDateTime warrantyEnd;
-    private LocalDateTime purchaseDate;
+    private LocalDate warrantyStart;
+    private LocalDate warrantyEnd;
+    private LocalDate purchaseDate;
     private String imageName;
     private Double purchasePrice;
     private LocalDateTime createdAt = LocalDateTime.now();
@@ -41,11 +42,13 @@ public class Device {
     private List<DeviceActivity> deviceActivities = new ArrayList<>();
     @OneToMany(mappedBy = "device", cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     private List<Event> events = new ArrayList<>();
+    @OneToMany(mappedBy = "device", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private List<Task> tasks = new ArrayList<>();
     @OneToMany(mappedBy = "device", cascade = { CascadeType.ALL }, orphanRemoval = true)
     private List<Document> documents = new ArrayList<>();
     private String about;
 
-    public Device(String name, String model, DeviceType deviceType, String spot, LocalDateTime warrantyStart, LocalDateTime warrantyEnd, LocalDateTime purchaseDate, Double purchasePrice, String about) {
+    public Device(String name, String model, DeviceType deviceType, String spot, LocalDate warrantyStart, LocalDate warrantyEnd, LocalDate purchaseDate, Double purchasePrice, String about) {
         this.name = name;
         this.model = model;
         this.deviceType = deviceType;
@@ -66,4 +69,8 @@ public class Device {
     }
 
     public void addDocument(Document document) { this.documents.add(document); }
+
+    public void addTask(Task task) {
+        this.tasks.add(task);
+    }
 }

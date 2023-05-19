@@ -36,7 +36,7 @@ public class NotificationService {
     }
 
     public List<NotificationDto> getUserNotifications(UUID userId) {
-        return notificationRepository.findAllByHomeeUserIdOrderByCreationDate(userId)
+        return notificationRepository.findAllByHomeeUserIdOrderByCreationDateDesc(userId)
                 .stream()
                 .map(notificationMapper::mapNotificationEntityToDto)
                 .toList();
