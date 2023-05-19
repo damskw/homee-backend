@@ -30,6 +30,12 @@ public class UserController {
     public List<HomeeUserDto> getAllUsers() { return homeeUserService.getAllHomeeUsers(); }
 
     @RolesAllowed(USER)
+    @GetMapping(params = "spaceId")
+    public List<HomeeUserDto> getUsersForSpace(@RequestParam UUID spaceId) {
+        return homeeUserService.getUsersForSpace(spaceId);
+    }
+
+    @RolesAllowed(USER)
     @GetMapping("/{id}")
     public HomeeUserDto getUser(@PathVariable UUID id) { return homeeUserService.getHomeeUser(id); }
 

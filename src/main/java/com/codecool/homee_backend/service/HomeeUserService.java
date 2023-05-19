@@ -171,4 +171,9 @@ public class HomeeUserService {
         return random.nextInt(900_000) + 100_000;
     }
 
+    public List<HomeeUserDto> getUsersForSpace(UUID spaceId) {
+        return homeeUserRepository.getUsersForSpace(spaceId).stream()
+                .map(homeeUserMapper::mapHomeeUserEntityToDto)
+                .toList();
+    }
 }

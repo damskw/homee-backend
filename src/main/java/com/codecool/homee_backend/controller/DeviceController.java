@@ -20,7 +20,6 @@ import static com.codecool.homee_backend.config.auth.SpringSecurityConfig.USER;
 @RolesAllowed(USER)
 @RestController
 @RequestMapping("/api/v1/devices")
-@CrossOrigin(origins = "http://localhost:3000")
 @Slf4j
 public class DeviceController {
     private final DeviceService deviceService;

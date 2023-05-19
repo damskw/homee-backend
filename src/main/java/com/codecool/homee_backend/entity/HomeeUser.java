@@ -50,6 +50,8 @@ public class HomeeUser {
     private Set<Space> spaces = new HashSet<>();
     @OneToMany(mappedBy = "homeeUser", cascade = CascadeType.ALL)
     private List<SupportTicket> supportTickets = new ArrayList<>();
+    @OneToMany(mappedBy = "homeeUser", cascade = CascadeType.ALL)
+    private List<Task> tasks;
     private Integer registrationCode;
     private Boolean isActivated = false;
 
@@ -80,5 +82,9 @@ public class HomeeUser {
 
     public void clearAllUserGroups() {
         spaceGroups.clear();
+    }
+
+    public void addTask(Task task) {
+        this.tasks.add(task);
     }
 }

@@ -20,4 +20,7 @@ public interface HomeeUserRepository extends JpaRepository<HomeeUser, UUID> {
     Optional<HomeeUser> findByEmail(String email);
 
     Optional<HomeeUser> findByEmailOrUsername(String username, String email);
+
+    @Query("SELECT DISTINCT u FROM HomeeUser u LEFT JOIN FETCH u.spaces s WHERE s.id = :spaceId")
+    List<HomeeUser> getUsersForSpace(UUID spaceId);
 }
