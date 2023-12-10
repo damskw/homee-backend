@@ -2,7 +2,7 @@
 
 This is a back-end side of a Homee web application.
 
-Technologies used: `Java 17, Spring, Hibernate`
+Technologies used: `Java 17, Spring, Hibernate, PostgreSQL, Maven`
 
 Homee is a web application based on microservices for home (and possibile business) users to store, manage and maintain devices in your home/business area. Manage your warranties, documents and store any information you'd like. Set custom notifications, be notified of any future repairs or any upcoming events. See device's history, browse through all costs spend and view repair details. Managing your home or business devices has never been easier.
 
